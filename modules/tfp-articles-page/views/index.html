@@ -1,0 +1,61 @@
+{# modules/articles-page/views/index.html #} {% extends "layout.html" %} 
+{% import '@apostrophecms/pager:macros.html' as pager with context %}
+{% block main %}
+<div class="container mx-auto my-14 px-4">
+<form method="GET" action="{{ data.url }}">
+  <select name="sort" onchange="this.form.submit()">
+    <option value="desc" {% if data.query.sort == 'desc' %}selected{% endif %}>Newest First</option>
+    <option value="asc" {% if data.query.sort == 'asc' %}selected{% endif %}>Oldest First</option>
+  </select>
+  <select name="tag" onchange="this.form.submit()">
+    <option value="">All Tags</option>
+    {% for tag in data.allTags %}
+      <option value="{{ tag.slug }}" {% if data.query.tag == tag.slug %}selected{% endif %}>{{ tag.title }}</option>
+    {% endfor %}
+  </select>
+</form>
+	<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-14">
+		{% for article in data.pieces %}
+			<a href="{{ article._url }}" class="group block relative">
+
+				{% set banner = apos.image.first(article.heroImage) %}
+				{% if banner is defined %}
+						<img class="mb-6 object-cover w-full h-[216px] sm:h-[270px]" src="{{ apos.attachment.url(banner, { size: data.options.size or 'full' }) }}"
+							alt="{{ banner._alt or '' }}" width="{{ apos.attachment.getWidth(banner) }}"
+							height="{{ apos.attachment.getHeight(banner) }}" />
+						{% else %}
+						<div class="w-full h-[216px] sm:h-[270px] bg-primary-light flex justify-center items-center mb-6">
+							<img src="../../images/procrea-logo-black-FR.svg" alt="Placeholder banner for {{ article.title }} "
+								width="160" height="50"/>
+						</div>
+					{% endif %}
+					<h5>{{ article.title }}</h5>
+					{% if article.authorInfo %}
+						{% if article.authorInfo.authorName %}
+							<div class="flex gap-2 items-center mt-2 mb-6">
+								<span class="icon-user text-3xl leading-none"></span>
+								<p class="tfp-text-sm">By <span class="notranslate"> {{ article.authorInfo.authorName }}</span></p>
+							</div>
+						{% endif %}
+					{% endif %}
+					{% if article.summary %}
+						<p>{{ article.summary }}</p>
+					{% endif %}
+					<div
+						class="bg-primary-black icon-button text-primary-white justify-center gap-2 size-14 rounded-full flex items-center border border-primary-black transition-all group-hover:border-accent-medium group-hover:bg-accent-medium absolute top-[140px] sm:top-[190px] right-[20px]">
+						<span class="icon-arrow-right-up text-3xl leading-none"></span>
+					</div>
+			</a>
+		{% endfor %}
+	</div>
+	<div
+		class="mt-8 md:mt-14 w-full [&>div]:w-full [&>div]:bg-primary-white [&>div]:text-center [&>div]:rounded-md [&>div]:p-4 [&>div]:font-serif [&_span]:py-1 [&_span]:px-2 [&_span]:rounded-sm [&_.is-active]:text-primary-white [&_.is-active]:bg-primary-main">
+		{{ pager.render({
+		page: data.currentPage,
+		total: data.totalPages,
+		class: 'blog-pager'
+		}, data.url) }}
+	</div>
+</div>
+
+{% endblock main %}

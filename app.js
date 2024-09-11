@@ -1,6 +1,11 @@
 require('apostrophe')({
   shortName: 'a3-boilerplate',
   modules: {
+    'tfp-articles': {},
+    'article-tag': {},
+
+    // Pages
+    'tfp-articles-page': {},
     // Apostrophe module configuration
     // *******************************
     //
